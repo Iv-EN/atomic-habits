@@ -114,3 +114,6 @@ TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_URL = "https://api.telegram.org/bot"
 
 NULLABLE = {"null": True, "blank": True}
+
+PAGINATOR_HABITS_PAGE_SIZE = 5
+PAGINATOR_HABITS_MAX_PAGE_SIZE = 10

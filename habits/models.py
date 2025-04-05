@@ -1,3 +1,4 @@
+from django.core.exceptions import ValidationError
 from django.db import models
 
 from config.settings import NULLABLE
@@ -25,19 +26,22 @@ class Habit(models.Model):
             "self",
             **NULLABLE,
             on_delete=models.SET_NULL,
+            limit_choices_to={"is_pleasant_habit": True},
             verbose_name="Связанная привычка",
+            help_text="Может быть только приятной (is_pleasant_habit: True)"
         ),
     )
     frequency = models.PositiveIntegerField(
         default=1,
         verbose_name="Периодичность выполнения",
-        help_text="Количество выполнений привычки в неделю"
+        help_text="Периодичность выполнения привычки в днях"
     )
     reward = models.CharField(
         max_length=255, **NULLABLE, verbose_name="Вознаграждение за выполнение"
     )
     estimated_duration = models.PositiveIntegerField(
-        verbose_name="Время на выполнение в минутах"
+        verbose_name="Время на выполнение в секундах",
+        help_text="Введите время на выполнение в секундах."
     )
     is_public = models.BooleanField(
         default=False, verbose_name="Признак публичности"
@@ -47,3 +51,24 @@ class Habit(models.Model):
         return (
             f"{self.user} - {self.habit_action} at {self.time} in {self.place}"
         )
+
+    def clean(self):
+        if self.reward and self.related_habit:
+            raise ValidationError(
+                "Нельзя одновременно заполнять вознаграждение "
+                "и связанную привычку."
+            )
+        if self.is_pleasant_habit:
+            if self.reward or self.related_habit:
+                raise ValidationError(
+                    "У приятной привычки не может быть "
+                    "вознаграждения или связанной привычки."
+                )
+        if self.estimated_duration > 120:
+            raise ValidationError(
+                "Время выполнения должно быть не больше 120 секунд"
+            )
+        if self.frequency > 7:
+            raise ValidationError(
+                "Нельзя выполнять привычку реже, чем 1 раз в 7 дней"
+            )
