@@ -1,7 +1,7 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
 
-blank_null_true = {"blank": True, "null": True}
+from config.settings import NULLABLE
 
 
 class User(AbstractUser):
@@ -9,7 +9,7 @@ class User(AbstractUser):
 
     email = models.EmailField(unique=True, verbose_name="Электронная почта")
     tg_chat_id = models.CharField(
-        max_length=50, **blank_null_true, verbose_name="Телеграмм ID"
+        max_length=50, verbose_name="Телеграмм чат ID", **NULLABLE
     )
 
     USERNAME_FIELD = "email"

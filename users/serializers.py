@@ -16,28 +16,15 @@ class UserSerializer(ModelSerializer):
             "id",
             "username",
             "email",
-            "phone_number",
-            "avatar",
+            "tg_chat_id",
+            "password",
         ]
 
-    def create(self, validated_data):
-        user = User(**validated_data)
-        user.set_password(validated_data["password"])
-        user.save()
-        return user
-
-    def to_representation(self, instance):
-        representation = super().to_representation(instance)
-        representation.pop("password", None)
-        return representation
-
-
-class UserDetailSerializer(ModelSerializer):
-    """Сериализатор для вывода всех полей модели пользователя."""
-
-    class Meta:
-        model = User
-        fields = "__all__"
+    def update(self, instance, validated_data):
+        """Обновляет данные пользователя."""
+        if "password" in validated_data:
+            instance.set_password(validated_data.pop("password"))
+        return super().update(instance, validated_data)
 
 
 class MyTokenObtainPairSerializer(TokenObtainPairSerializer):

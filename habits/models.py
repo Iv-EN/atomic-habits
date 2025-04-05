@@ -1,8 +1,7 @@
 from django.db import models
 
+from config.settings import NULLABLE
 from users.models import User
-
-NULLABLE = {"null": True, "blank": True}
 
 
 class Habit(models.Model):
@@ -30,7 +29,9 @@ class Habit(models.Model):
         ),
     )
     frequency = models.PositiveIntegerField(
-        default=1, verbose_name="Периодичность выполнения"
+        default=1,
+        verbose_name="Периодичность выполнения",
+        help_text="Количество выполнений привычки в неделю"
     )
     reward = models.CharField(
         max_length=255, **NULLABLE, verbose_name="Вознаграждение за выполнение"
@@ -43,4 +44,6 @@ class Habit(models.Model):
     )
 
     def __str__(self):
-        return f"{self.user} - {self.habit_action} at {self.time} in {self.place}"
+        return (
+            f"{self.user} - {self.habit_action} at {self.time} in {self.place}"
+        )
