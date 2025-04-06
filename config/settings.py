@@ -1,4 +1,5 @@
 import os
+from datetime import timedelta
 from pathlib import Path
 
 from dotenv import load_dotenv
@@ -110,6 +111,11 @@ AUTH_USER_MODEL = "users.User"
 MEDIA_URL = "media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
+SIMPLE_JWT = {
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60*5),
+    "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
+}
+
 TELEGRAM_BOT_TOKEN = os.getenv("TELEGRAM_BOT_TOKEN")
 TELEGRAM_URL = "https://api.telegram.org/bot"
 
@@ -117,3 +123,6 @@ NULLABLE = {"null": True, "blank": True}
 
 PAGINATOR_HABITS_PAGE_SIZE = 5
 PAGINATOR_HABITS_MAX_PAGE_SIZE = 10
+
+ESTIMATEDDURATION = 120
+"""Время на выполнение привычки в секундах."""

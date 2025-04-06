@@ -21,15 +21,14 @@ class Habit(models.Model):
     is_pleasant_habit = models.BooleanField(
         default=False, verbose_name="Признак приятной привычки"
     )
-    related_habit = (
-        models.ForeignKey(
-            "self",
-            **NULLABLE,
-            on_delete=models.SET_NULL,
-            limit_choices_to={"is_pleasant_habit": True},
-            verbose_name="Связанная привычка",
-            help_text="Может быть только приятной (is_pleasant_habit: True)"
-        ),
+    related_habit = models.ForeignKey(
+        "self",
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        limit_choices_to={"is_pleasant_habit": True},
+        verbose_name="Связанная привычка",
+        help_text="Может быть только приятной (is_pleasant_habit: True)"
     )
     frequency = models.PositiveIntegerField(
         default=1,
@@ -49,7 +48,8 @@ class Habit(models.Model):
 
     def __str__(self):
         return (
-            f"{self.user} - {self.habit_action} at {self.time} in {self.place}"
+            f"{self.id} - {self.habit_action}, время - {self.time}, "
+            f"место выполнения - {self.place}"
         )
 
     def clean(self):
@@ -64,11 +64,17 @@ class Habit(models.Model):
                     "У приятной привычки не может быть "
                     "вознаграждения или связанной привычки."
                 )
-        if self.estimated_duration > 120:
+        if self.estimated_duration is not None and self.estimated_duration > 120:
             raise ValidationError(
                 "Время выполнения должно быть не больше 120 секунд"
             )
-        if self.frequency > 7:
+        if self.frequency is not None and self.frequency > 7:
             raise ValidationError(
                 "Нельзя выполнять привычку реже, чем 1 раз в 7 дней"
             )
+        if self.related_habit and not self.related_habit.is_pleasant_habit:
+            raise ValidationError("Привычка должна быть приятной")
+
+    def save(self, *args, **kwargs):
+        self.clean()
+        super().save(*args, **kwargs)

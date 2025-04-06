@@ -1,32 +1,14 @@
-# from django.urls import path
-# from rest_framework.routers import SimpleRouter
-#
-# from .apps import HabitsConfig
-#
-# app_name = HabitsConfig.name
+from django.urls import include, path
+from rest_framework.routers import SimpleRouter
 
-# router = SimpleRouter()
-# router.register("", CourseViewSet)
-#
-# urlpatterns = [
-#     path("lessons/", LessonListApiView.as_view(), name="lesson_list"),
-#     path(
-#         "lessons/<int:pk>/",
-#         LessonRetieveApiView.as_view(),
-#         name="lesson_retrieve",
-#     ),
-#     path(
-#         "lessons/create/", LessonCreateApiView.as_view(), name="lesson_create"
-#     ),
-#     path(
-#         "lessons/<int:pk>/update/",
-#         LessonUpdateApiView.as_view(),
-#         name="lesson_update",
-#     ),
-#     path(
-#         "lessons/<int:pk>/delete/",
-#         LessonDestroyApiView.as_view(),
-#         name="lesson_destroy",
-#     ),
-# ]
-# urlpatterns += router.urls
+from .apps import HabitsConfig
+from .views import HabitViewSet
+
+app_name = HabitsConfig.name
+
+router = SimpleRouter()
+router.register("", HabitViewSet)
+
+urlpatterns = [
+    path("", include(router.urls)),
+]
