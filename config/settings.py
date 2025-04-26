@@ -94,7 +94,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-LANGUAGE_CODE = "en-us"
+LANGUAGE_CODE = "ru-ru"
 
 TIME_ZONE = "UTC"
 
@@ -112,7 +112,7 @@ MEDIA_URL = "media/"
 MEDIA_ROOT = os.path.join(BASE_DIR, "media")
 
 SIMPLE_JWT = {
-    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60*5),
+    "ACCESS_TOKEN_LIFETIME": timedelta(minutes=60 * 5),
     "REFRESH_TOKEN_LIFETIME": timedelta(days=1),
 }
 
@@ -124,5 +124,7 @@ NULLABLE = {"null": True, "blank": True}
 PAGINATOR_HABITS_PAGE_SIZE = 5
 PAGINATOR_HABITS_MAX_PAGE_SIZE = 10
 
-ESTIMATEDDURATION = 120
-"""Время на выполнение привычки в секундах."""
+ESTIMATED_DURATION = 120
+"""Максимальное время на выполнение привычки в секундах."""
+MAX_FREQUENCY = 7
+"""Максимальный интервал между выполнениями привычки в днях."""
