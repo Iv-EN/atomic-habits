@@ -1,5 +1,6 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import OrderingFilter
+from rest_framework.generics import ListAPIView
 from rest_framework.viewsets import ModelViewSet
 
 from habits.models import Habit
@@ -20,3 +21,12 @@ class HabitViewSet(ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+
+class PublicHabitListView(ListAPIView):
+    """Представление для получения списка публичных привычек."""
+
+    queryset = Habit.objects.filter(is_public=True)
+    serializer_class = HabitSerializer
+    filter_backends = [DjangoFilterBackend, OrderingFilter]
+    pagination_class = HabitPaginator

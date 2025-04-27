@@ -22,6 +22,7 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
+    "django_celery_beat",
     "rest_framework",
     "rest_framework_simplejwt",
     "users.apps.UsersConfig",
@@ -128,3 +129,17 @@ ESTIMATED_DURATION = 120
 """Максимальное время на выполнение привычки в секундах."""
 MAX_FREQUENCY = 7
 """Максимальный интервал между выполнениями привычки в днях."""
+
+CELERY_BROKER_URL = "redis://localhost:6379"
+CELERY_RESULT_BACKEND = "redis://localhost:6379"
+
+CELERY_TIMEZONE = TIME_ZONE
+CELERY_TASK_TRACK_STARTED = True
+CELERY_TASK_TIME_LIMIT = 30 * 60
+
+CELERY_BEAT_SCHEDULE = {
+    "sending_reminders": {
+        "task": "habits.tasks.collect_data_for_reminders",
+        "schedule": timedelta(minutes=30),
+    },
+}

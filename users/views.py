@@ -19,7 +19,7 @@ class UserCreateAPIView(generics.CreateAPIView):
                 "Вы не указали ID телеграм чата."
                 "Что бы полноценно использовать приложение перейдете "
                 "к редактированию профиля и укажите tg_chat_id."
-                ]
+            ]
         else:
             self.warnings = []
 
@@ -29,11 +29,14 @@ class UserCreateAPIView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         response = super().create(request, *args, **kwargs)
         if hasattr(self, "warnings") and self.warnings:
-            return Response({
-                "message": "Пользователь успешно создан.",
-                "warnings": self.warnings,
-                "user": response.data
-            }, status=status.HTTP_201_CREATED)
+            return Response(
+                {
+                    "message": "Пользователь успешно создан.",
+                    "warnings": self.warnings,
+                    "user": response.data,
+                },
+                status=status.HTTP_201_CREATED,
+            )
         return response
 
 
