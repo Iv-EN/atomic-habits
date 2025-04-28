@@ -27,6 +27,7 @@ INSTALLED_APPS = [
     "rest_framework_simplejwt",
     "users.apps.UsersConfig",
     "habits.apps.HabitsConfig",
+    "drf_yasg",
 ]
 
 REST_FRAMEWORK = {

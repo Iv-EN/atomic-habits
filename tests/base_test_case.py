@@ -33,7 +33,7 @@ class BaseTestCase(APITestCase):
             "time": "10:00",
             "frequency": 1,
             "estimated_duration": 50,
-            "is_pleasant_habit": True
+            "is_pleasant_habit": True,
         }
         default_data.update(kwargs)
         return Habit.objects.create(**default_data)
