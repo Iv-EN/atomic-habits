@@ -26,8 +26,7 @@ class Habit(models.Model):
     )
     related_habit = models.ForeignKey(
         "self",
-        null=True,
-        blank=True,
+        **settings.NULLABLE,
         on_delete=models.SET_NULL,
         limit_choices_to={"is_pleasant_habit": True},
         verbose_name="Связанная привычка",
