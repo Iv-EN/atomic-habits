@@ -1,0 +1,77 @@
+version: "3.9"
+
+networks:
+  atomic_habits_network:
+    driver: bridge
+
+services:
+  db:
+    container_name: ah_db
+    networks:
+      - atomic_habits_network
+    image: postgres:16
+    restart: always
+    env_file:
+      - .env
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+  backend:
+    container_name: ah_backend
+    networks:
+      - atomic_habits_network
+    image:  ah_backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - db
+      - redis
+    restart: always
+    ports:
+      - "8000:8000"
+
+  redis:
+    container_name: ah_redis
+    networks:
+      - atomic_habits_network
+    image: redis:7
+    restart: always
+
+  celery:
+    container_name: ah_celery
+    networks:
+      - atomic_habits_network
+    image: ah_backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - backend
+      - redis
+    command: >
+      celery -A config worker -l INFO ${CELERY_OPTIONS}
+    restart: always
+
+  celery_beat:
+    container_name: ah_celery_beat
+    networks:
+      - atomic_habits_network
+    image: ah_backend
+    build:
+      context: .
+      dockerfile: Dockerfile
+    env_file:
+      - .env
+    depends_on:
+      - backend
+      - redis
+    command: celery -A config beat -l INFO
+    restart: always
+
+volumes:
+  postgres_data:
