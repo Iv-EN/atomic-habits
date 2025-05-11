@@ -2,8 +2,8 @@
 
 set -x
 
-python manage.py migrate --noinput || exit 1
-python manage.py collectstatic --noinput || exit 1
-cp -r /app/collected_static/. /static/ || exit 1
+python manage.py migrate --noinput &&\
+python manage.py collectstatic --noinput &&\
+cp -r collected_static/. /static/
 
 exec "$@"
