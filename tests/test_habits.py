@@ -5,6 +5,10 @@ from tests.base_test_case import BaseTestCase
 class TestHabits(BaseTestCase):
     """Тестирование модели Habit."""
 
+    def setUp(self):
+        super().setUp()
+        self.related_habit = self.create_habit(habit_action="Действие")
+
     def test_create_habit(self):
         """Проверка создания привычки."""
         data = self.create_habit_data()
@@ -48,7 +52,10 @@ class TestHabits(BaseTestCase):
         """
         Проверяет одновременное наличие связанной привычки и вознаграждения.
         """
-        data = self.create_habit_data(reward="Вознаграждение", related_habit=0)
+        data = self.create_habit_data(
+            reward="Вознаграждение",
+            related_habit=self.related_habit.id
+        )
         response = self.client.post("/habits/", data=data)
         print(f"Ответ - {response.data}")
         assert response.status_code == 400
