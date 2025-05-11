@@ -22,7 +22,6 @@ services:
     container_name: ah_backend
     networks:
       - atomic_habits_network
-    image:  ah_backend
     build:
       context: .
       dockerfile: Dockerfile
@@ -48,7 +47,6 @@ services:
     container_name: ah_celery
     networks:
       - atomic_habits_network
-    image: ah_backend
     build:
       context: .
       dockerfile: Dockerfile
@@ -65,7 +63,6 @@ services:
     container_name: ah_celery_beat
     networks:
       - atomic_habits_network
-    image: ah_backend
     build:
       context: .
       dockerfile: Dockerfile
