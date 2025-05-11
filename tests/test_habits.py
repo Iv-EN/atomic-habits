@@ -36,7 +36,7 @@ class TestHabits(BaseTestCase):
                 "error_message": "У приятной привычки не может быть вознаграж",
             },
             {
-                "data": {"related_habit": 1},
+                "data": {"related_habit": self.related_habit.id},
                 "error_message": "У приятной привычки не может быть вознаграж",
             },
         ]
