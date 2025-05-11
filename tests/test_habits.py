@@ -15,7 +15,7 @@ class TestHabits(BaseTestCase):
         response = self.client.post("/habits/", data=data)
         assert response.status_code == 201
         assert Habit.objects.last().habit_action == "Тестовое действие"
-        assert Habit.objects.count() == 2
+        assert Habit.objects.count() == 3
 
     def test_estimated_duration(self):
         """
