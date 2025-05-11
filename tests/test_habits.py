@@ -48,7 +48,7 @@ class TestHabits(BaseTestCase):
         """
         Проверяет одновременное наличие связанной привычки и вознаграждения.
         """
-        data = self.create_habit_data(reward="Вознаграждение", related_habit=1)
+        data = self.create_habit_data(reward="Вознаграждение", related_habit=0)
         response = self.client.post("/habits/", data=data)
         print(f"Ответ - {response.data}")
         assert response.status_code == 400
