@@ -86,27 +86,27 @@ jobs:
     needs:
       - build_and_push_to_docker_hub
     steps:
-      - name: Checkout repo
-        uses: actions/checkout@v3
-      - name: Executing remote ssh commands to deploy
-        uses: appleboy/ssh-action@master
+      - name: Set up SSH
+        uses: webfactory/ssh-agent@v0.9.0
         with:
-          host: ${{ secrets.HOST }}
-          username: ${{ secrets.USER }}
-          key: ${{ secrets.SSH_KEY }}
-          script: |
-            cd atomic_habits
-            echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} > .env
-            echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
-            echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
-            echo DB_HOST=${{ secrets.DB_HOST }} >> .env
-            echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-            echo SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} >> .env
-            echo DEBUG=${{ secrets.DEBUG }} >> .env
-            echo TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_TOKEN }} >> .env
-            sudo docker compose down
-            sudo docker compose up -d
-            sudo docker compose image prune -a
+          ssh-private-key: ${{ secrets.SSH_KEY }}
+      - name: Deploy to server
+        run: |
+          ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.SERVER_IP }} << 'EOF'
+          cd atomic-habits
+          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} > .env
+          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+          echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
+          echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+          echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+          echo SECRET_KEY=${{ secrets.DJANGO_SECRET_KEY }} >> .env
+          echo DEBUG=${{ secrets.DEBUG }} >> .env
+          echo TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_TOKEN }} >> .env
+          docker pull ${{ secrets.DOCKER_USERNAME }}/atomic_habits
+          sudo docker compose down
+          sudo docker compose up -d
+          sudo docker compose image prune -a
+          rm -f .env
 
   send_message:
     runs-on: ubuntu-latest
