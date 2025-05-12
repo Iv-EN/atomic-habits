@@ -92,7 +92,7 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_KEY }}
       - name: Deploy to server
         run: |
-          scp -o StrictHostKeyChecking=no docker-compose.yml ${{ secrets.USER }}@${{ secrets.SERVER_IP }}:~/atomic-habits/
+          scp -o StrictHostKeyChecking=no ./docker-compose.yml ${{ secrets.USER }}@${{ secrets.SERVER_IP }}:~/atomic-habits/
           ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           cd atomic-habits
           touch .env
