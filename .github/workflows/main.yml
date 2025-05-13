@@ -85,30 +85,42 @@ jobs:
     runs-on: ubuntu-latest
     needs:
       - build_and_push_to_docker_hub
+    if: github.ref == 'refs/heads/master'
     steps:
-      - name: Set up SSH
-        uses: webfactory/ssh-agent@v0.9.0
+      - name: Checkout repo
+        uses: actions/checkout@v3
+      - name: Copy docker-compose.production.yml via ssh
+        uses: appleboy/scp-action@v0.1.3
         with:
-          ssh-private-key: ${{ secrets.SSH_KEY }}
-      - name: Deploy to server
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.SERVER_IP }} << 'EOF'
-          cd atomic-habits
-          touch .env
-          echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} > .env
-          echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
-          echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
-          echo DB_HOST=${{ secrets.DB_HOST }} >> .env
-          echo DB_PORT=${{ secrets.DB_PORT }} >> .env
-          printf 'SECRET_KEY=%s\n' "${{ secrets.DJANGO_SECRET_KEY }}" >> .env
-          echo DEBUG=${{ secrets.DEBUG }} >> .env
-          echo TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_TOKEN }} >> .env
-          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/atomic_habits
-          sudo docker stop atomic_habits ||true
-          sudo docker rm atomic_habits || true
-          sudo docker run -d --name atomic_habits -p 80:8000 ${{ secrets.DOCKER_USERNAME }}/atomic_habits
-          rm -f .env
-          EOF
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          source: "docker-compose.production.yml"
+          target: "atomic-habits"
+      - name: Executing remote ssh commands to deploy
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            cd atomic-habits
+            touch .env
+            echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} > .env
+            echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
+            echo POSTGRES_DB=${{ secrets.POSTGRES_DB }} >> .env
+            echo DB_HOST=${{ secrets.DB_HOST }} >> .env
+            echo DB_PORT=${{ secrets.DB_PORT }} >> .env
+            printf 'SECRET_KEY=%s\n' "${{ secrets.DJANGO_SECRET_KEY }}" >> .env
+            echo DEBUG=${{ secrets.DEBUG }} >> .env
+            echo TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_TOKEN }} >> .env
+            sudo docker compose -f docker-compose.production.yml stop
+            sudo docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs sudo docker rm
+            sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/ah_backend
+            sudo docker compose -f docker-compose.production.yml up -d
+            sudo docker image prune -a
+            rm -f .env
+
 
   send_message:
     runs-on: ubuntu-latest

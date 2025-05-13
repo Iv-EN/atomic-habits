@@ -1,0 +1,14 @@
+volumes:
+  pg_data:
+  static:
+  media:
+
+services:
+  backend:
+    container_name: ah_backend
+    image: ivenauto/atomic_habits
+    env_file:
+      - .env
+    volumes:
+      - static:/app/static/
+      - media:/app/media/
