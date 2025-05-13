@@ -92,7 +92,6 @@ jobs:
           ssh-private-key: ${{ secrets.SSH_KEY }}
       - name: Deploy to server
         run: |
-          scp -o StrictHostKeyChecking=no ./docker-compose.yml ${{ secrets.USER }}@${{ secrets.SERVER_IP }}:~/atomic-habits/
           ssh -o StrictHostKeyChecking=no ${{ secrets.USER }}@${{ secrets.SERVER_IP }} << 'EOF'
           cd atomic-habits
           touch .env
@@ -104,10 +103,10 @@ jobs:
           printf 'SECRET_KEY=%s\n' "${{ secrets.DJANGO_SECRET_KEY }}" >> .env
           echo DEBUG=${{ secrets.DEBUG }} >> .env
           echo TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_TOKEN }} >> .env
-          docker pull ${{ secrets.DOCKER_USERNAME }}/atomic_habits
-          sudo docker compose down
-          sudo docker compose up -d
-          sudo docker compose image prune -a
+          sudo docker pull ${{ secrets.DOCKER_USERNAME }}/atomic_habits
+          sudo docker stop atomic_habits ||true
+          sudo docker rm atomic_habits || true
+          sudo docker run -d --name atomic_habits -p 80:8000 ${{ secrets.DOCKER_USERNAME }}/atomic_habits
           rm -f .env
           EOF
 
