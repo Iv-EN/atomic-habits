@@ -1,7 +1,7 @@
 volumes:
   pg_data:
-  static:
-  media:
+  static_volume:
+  media_volume:
 
 services:
   backend:
@@ -10,5 +10,5 @@ services:
     env_file:
       - .env
     volumes:
-      - static:/app/static/
-      - media:/app/media/
+      - static_volume:/app/static
+      - media_volume:/app/media
