@@ -114,11 +114,7 @@ jobs:
             echo DEBUG=${{ secrets.DEBUG }} >> .env
             echo TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_TOKEN }} >> .env
             sudo docker compose -f docker-compose.production.yml stop
-            sudo docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs sudo docker rm
-            sudo docker rmi ${{ secrets.DOCKER_USERNAME }}/ah_backend
             sudo docker compose -f docker-compose.production.yml up -d
-            sudo docker image prune -a
-            rm -f .env
 
 
   send_message:
