@@ -1,0 +1,42 @@
+volumes:
+  pg_data:
+  static_volume:
+  media_volume:
+
+services:
+  db:
+    container_name: pg_db_prod
+    image: postgres:16
+    env_file:
+      - .env
+    volumes:
+      - pg_data:/var/lib/postgresql/data
+
+  backend:
+    container_name: ah_backend_prod
+    image: ivenauto/atomic_habits
+    env_file:
+      - .env
+    volumes:
+      - static_volume:/app/static
+      - media_volume:/app/media
+    depends_on:
+      - db
+    restart: on-failure
+
+  gateway:
+    container_name: nginx_prod
+    image: ivenauto/atomic_habits_gateway
+    env_file:
+      - .env
+    volumes:
+      - static_volume:/static
+      - media_volume:/media
+    ports:
+      - 8000:80
+    depends_on:
+      - backend
+
+  redis:
+    container_name: ah_redis_prod
+    image: redis:7

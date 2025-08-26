@@ -14,8 +14,4 @@ RUN python -m pip install --upgrade pip && pip install -r requirements.txt --no-
 
 COPY . .
 
-ADD entrypoint.sh /entrypoint.sh
-RUN chmod a+x /entrypoint.sh
-ENTRYPOINT [ "/entrypoint.sh" ]
-
-CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi"]
+# CMD ["gunicorn", "--bind", "0.0.0.0:8000", "config.wsgi"]
