@@ -22,7 +22,10 @@ services:
       - media_volume:/app/media
     depends_on:
       - db
+    ports:
+      - 8000:8000
     restart: on-failure
+
 
   gateway:
     container_name: nginx_prod
