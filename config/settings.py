@@ -150,7 +150,12 @@ CELERY_BEAT_SCHEDULE = {
     },
 }
 
-CORS_ALLOWED_ORIGINS = ["*"]
+CORS_ALLOWED_ORIGINS = [
+    "http://158.160.154.204:80",
+    "http://127.0.0.1:80",
+    "http://158.160.154.204:8000",
+    "http://127.0.0.1:8000",
+]
 
 CSRF_TRUSTED_ORIGINS = [
     "http://158.160.154.204:80",
