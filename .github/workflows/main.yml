@@ -122,6 +122,13 @@ jobs:
             set -euo pipefail
             mkdir -p ~/www/atomic-habits
             cd ~/www/atomic-habits
+            if [ ! -d ".git" ]; then
+              git clone git@github.com:Iv-EN/atomic-habits.git . || true
+            fi
+            git fetch origin
+            git switch main || git switch -c main origin/main
+            git reset --hard origin/main
+            git clean -fdx
             touch .env
             echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
             echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
@@ -131,15 +138,10 @@ jobs:
             printf 'SECRET_KEY=%s\n' "${{ secrets.DJANGO_SECRET_KEY }}" >> .env
             echo DEBUG=${{ secrets.DEBUG }} >> .env
             echo TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_TOKEN }} >> .env
-            if [ ! -d ".git" ]; then
-              git clone git@github.com:Iv-EN/atomic-habits.git . || true
-            fi
-            git fetch origin
-            git switch main || git switch -c main origin/main
-            git reset --hard origin/main
-            git clean -fdx
             docker compose pull
             docker compose up --build --force-recreate -d
+            sudo docker image prune -a
+            rm -f .env
 
   send_message:
     runs-on: ubuntu-latest
