@@ -111,24 +111,24 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
-      - name: Ensure remote directory exists
+
+      - name: Deploy to server
         uses: appleboy/ssh-action@master
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
+            set -euo pipefail
             mkdir -p ~/www/atomic-habits
-      - name: Fetch updates
-        run: |
-          set -euo pipefail
-          cd ~/www/atomic-habits
-          git fetch origin
-          git switch main || git switch -c main origin/main
-          git reset --hard origin/main
-          git clean -fdx
-          docker compose pull
-          docker compose up --build --force-recreate -d
+            cd ~/www/atomic-habits
+            if [ ! -d ".git" ]; then git clone git@github.com:Iv-EN/atomic-habits.git . || true fi
+            git fetch origin
+            git switch main || git switch -c main origin/main
+            git reset --hard origin/main
+            git clean -fdx
+            docker compose pull
+            docker compose up --build --force-recreate -d
 
   send_message:
     runs-on: ubuntu-latest
