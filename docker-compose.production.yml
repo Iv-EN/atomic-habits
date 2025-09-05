@@ -2,6 +2,7 @@ volumes:
   pg_data:
   static_volume:
   media_volume:
+  redis_data:
 
 services:
   db:
@@ -24,24 +25,27 @@ services:
       - db
 #    ports:
 #      - 8000:8000
-    restart: always
+    restart: unless-stopped
 
 
   gateway:
     container_name: nginx
-    image: nginx:1.19.3
+    image: nginx:1.23
     env_file:
       - .env
     ports:
       - 8000:80
     volumes:
       - ./nginx.production.conf:/etc/nginx/conf.d/default.conf
-      - static:/etc/nginx/html/static/
-      - media:/etc/nginx/html/media/
+      - static_volume:/usr/share/nginx/html/static
+      - media_volume:/usr/share/nginx/html/media
     depends_on:
       - backend
-    restart: always
+    restart: unless-stopped
 
   redis:
     container_name: ah_redis_prod
     image: redis:7
+    volumes:
+      - redis_data:/data
+    restart: unless-stopped
