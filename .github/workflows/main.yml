@@ -157,7 +157,7 @@ jobs:
             sudo docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs sudo docker rm
             sudo docker compose -f docker-compose.production.yml up -d
             sudo docker image prune -a
-#            rm -f .env
+            rm -f .env
 
 
   send_message:
