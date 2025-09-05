@@ -62,7 +62,7 @@ services:
       - .:/app
     working_dir: /app
     command: >
-      /bin/bash -c "pip install --no-cache-dir -r requirements.txt && celery -A config worker -l INFO ${CELERY_OPTIONS}"
+      /bin/bash -c "pip install --no-cache-dir  celery && celery -A config worker -l INFO ${CELERY_OPTIONS}"
     restart: always
 
   celery_beat:
@@ -71,10 +71,10 @@ services:
     env_file:
       - .env
     depends_on:
-      - backend
+      - celery
     volumes:
       - .:/app
     working_dir: /app
     command: >
-      /bin/bash -c "pip install --no-cache-dir -r requirements.txt && celery -A config beat -l INFO"
+      celery -A config beat -l INFO"
     restart: always
