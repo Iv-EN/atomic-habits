@@ -134,7 +134,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           source: "nginx.production.conf"
-          target: "~/www/atomic-habits/nginx.production.conf"
+          target: "~/www/atomic-habits"
       - name: Executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
         with:
