@@ -122,7 +122,9 @@ jobs:
             set -euo pipefail
             mkdir -p ~/www/atomic-habits
             cd ~/www/atomic-habits
-            if [ ! -d ".git" ]; then git clone git@github.com:Iv-EN/atomic-habits.git . || true fi
+            if [ ! -d ".git" ]; then
+              git clone git@github.com:Iv-EN/atomic-habits.git . || true
+            fi
             git fetch origin
             git switch main || git switch -c main origin/main
             git reset --hard origin/main
