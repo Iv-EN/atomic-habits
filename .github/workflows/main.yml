@@ -118,7 +118,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           source: "docker-compose.production.yml"
-          target: "atomic-habits"
+          target: "www/atomic-habits"
       - name: Executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
         with:
@@ -126,7 +126,7 @@ jobs:
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           script: |
-            cd atomic-habits
+            cd www/atomic-habits
             touch .env
             echo POSTGRES_USER=${{ secrets.POSTGRES_USER }} >> .env
             echo POSTGRES_PASSWORD=${{ secrets.POSTGRES_PASSWORD }} >> .env
@@ -136,8 +136,12 @@ jobs:
             printf 'SECRET_KEY=%s\n' "${{ secrets.DJANGO_SECRET_KEY }}" >> .env
             echo DEBUG=${{ secrets.DEBUG }} >> .env
             echo TELEGRAM_BOT_TOKEN=${{ secrets.TELEGRAM_TOKEN }} >> .env
+            
             sudo docker compose -f docker-compose.production.yml stop
+            sudo docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs sudo docker rm
             sudo docker compose -f docker-compose.production.yml up -d
+            sudo docker image prune -a
+            rm -f .env
 
 
   send_message:
