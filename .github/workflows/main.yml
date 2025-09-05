@@ -111,14 +111,22 @@ jobs:
     steps:
       - name: Checkout repo
         uses: actions/checkout@v3
+      - name: Ensure remote directory exists
+        uses: appleboy/ssh-action@master
+        with:
+          host: ${{ secrets.SERVER_IP }}
+          username: ${{ secrets.USER }}
+          key: ${{ secrets.SSH_KEY }}
+          script: |
+            mkdir -p ~/www/atomic-habits
       - name: Copy docker-compose.production.yml via ssh
-        uses: appleboy/scp-action@v0.1.3
+        uses: appleboy/scp-action@v0.1.4
         with:
           host: ${{ secrets.SERVER_IP }}
           username: ${{ secrets.USER }}
           key: ${{ secrets.SSH_KEY }}
           source: "docker-compose.production.yml"
-          target: "www/atomic-habits/docker-compose.production.yml"
+          target: "~/www/atomic-habits/docker-compose.production.yml"
       - name: Executing remote ssh commands to deploy
         uses: appleboy/ssh-action@master
         with:
@@ -141,7 +149,7 @@ jobs:
             sudo docker ps -a | grep Exit | cut -d ' ' -f 1 | xargs sudo docker rm
             sudo docker compose -f docker-compose.production.yml up -d
             sudo docker image prune -a
-            rm -f .env
+#            rm -f .env
 
 
   send_message:
